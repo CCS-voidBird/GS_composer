@@ -491,14 +491,15 @@ class NCNN(NN):
         X = layers.Conv1D(128, kernel_size=3, strides=3, padding='same', activation='elu')(X)
         X = layers.MaxPooling1D(pool_size=2)(X)
 
-        X = layers.Dropout(rate=0.2)(X)
-        X = layers.Flatten()(X)
+        model.add(Dropout(rate=0.2))
 
-        for i in range(args.depth):
-            X = residual_fl_block(input=X, width=self.args.width,activation=layers.ELU(),downsample=(i%2 != 0 & self.args.residual))
-        X = layers.Dropout(rate=0.2)(X)
-        output = layers.Dense(1, activation="linear")(X)
-        model = keras.Model(inputs=input, outputs=output)
+        model.add(Flatten())
+
+        # Full connected layers, classic multilayer perceptron (MLP)
+        for layers in range(args.depth):
+            model.add(Dense(args.width, activation="elu"))
+        model.add(Dropout(0.2))
+        model.add(Dense(1, activation="linear")) 
 
         try:
             adm = keras.optimizers.Adam(learning_rate=lr)
