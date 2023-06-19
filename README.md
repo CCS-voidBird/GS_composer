@@ -12,15 +12,9 @@ Required:
 Current available models: (Use Key as call parameter)
 ```
 MODELS = {
-    "MLP": MLP, (Multilayer Perceptron)
+    "MLP": MLP,
     "Numeric CNN": NCNN,
     "Binary CNN": BCNN,
-    "Test CNN":Transformer, (Need work) (DO NOT USE)
-    "Duo CNN": DCNN, Double portal CNN (Combined BCNN and NCNN) (DO NOT USE)
-    "Double CNN": DoubleCNN, (DO NOT USE)
-    "Attention CNN": AttentionCNN, (Need work) (DO NOT USE)
-    "ResMLP": ResMLP, (DO NOT USE)
-    "LNN": LNN, (Local connected Network)
 } # All the models are stored in ClassModel.py
 ```
 Example:
@@ -28,28 +22,23 @@ python $TMPDIR/ML_composer/GS_composer.py --ped $geno --pheno $pheno --mpheno 1 
 
 ##Please use GS_composer as main py file for Deep learning related prediction
 ```
-Usage:
-usage: GS_composer.py [-h] --ped PED -pheno PHENO [-mpheno MPHENO]
-                      [-index INDEX] --model MODEL [--load LOAD]
-                      [--trait TRAIT] [-o OUTPUT] [-r ROUND] [-lr LR]
-                      [-epo EPOCH] [-batch BATCH] [--rank RANK] [-plot]
-                      [-residual] [-quiet QUIET] [-save SAVE] [-config CONFIG]
-                      [--width WIDTH] [--depth DEPTH] [--use-mean]
+usage: GS_composer.py [-h] --ped PED -pheno PHENO [-mpheno MPHENO] [-index INDEX] --model MODEL [--load LOAD] [--trait TRAIT] [-o OUTPUT] [-r ROUND] [-lr LR] [-epo EPOCH] [-batch BATCH] [--rank RANK] [-plot] [-residual]
+                      [-quiet QUIET] [-save SAVE] [-config CONFIG] [--width WIDTH] [--depth DEPTH] [--use-mean]
 
 optional arguments:
   -h, --help            show this help message and exit
   --use-mean
 
 Required:
-  --ped PED             PED-like file name, genotypes need to be numbers e.g. 0, 1, 2
+  --ped PED             PED-like file name
   -pheno PHENO, --pheno PHENO
-                        Phenotype file. No header, the first and second columns are FIN and IID, then PHENOTYPE columns
+                        Phenotype file.
   -mpheno MPHENO, --mpheno MPHENO
-                        Phenotype columns (start with 1). Will select i+2 column as input phenotype
+                        Phenotype columns (start with 1).
   -index INDEX, --index INDEX
-                        index file; first and second columns need to be FID and IID, then a column record group index (designed for N-fold cross validation)
+                        index file
   --model MODEL         Select training model.
-  --load LOAD           load model from file. (DO NOT USE)
+  --load LOAD           load model from file.
   --trait TRAIT         give trait a name.
   -o OUTPUT, --output OUTPUT
                         Input output dir.
@@ -60,16 +49,15 @@ Required:
                         training epoch.
   -batch BATCH, --batch BATCH
                         batch size.
-  --rank RANK           If the trait is a ranked value, will use a standard
-                        value instead. (DO NOT USE)
+  --rank RANK           If the trait is a ranked value, will use a standard value instead.
   -plot, --plot
-  -residual, --residual 
+  -residual, --residual
   -quiet QUIET, --quiet QUIET
                         silent mode, 0: quiet, 1: normal, 2: verbose
   -save SAVE, --save SAVE
                         save model True/False
   -config CONFIG, --config CONFIG
-                        config file path, default: ./ML_composer.ini (DO NOT USE)
+                        config file path, default: ./ML_composer.ini
   --width WIDTH         Hidden layer width (units).
   --depth DEPTH         Hidden layer depth.
 ```
