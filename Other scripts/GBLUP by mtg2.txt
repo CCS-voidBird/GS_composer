@@ -1,33 +1,39 @@
- awk '{if ($1 == 0) print $1 = 1,$2,$3,$4 > "sugarcane_tch_all.map"; else print $1,$2,$3,$4 > "sugarcane_tch_all.map"}'  sugarcane_tch_all.map
+# take training set 2013-2016 as example
 
-plink --file sugarcane_tch_all --make-bed --allow-no-sex --out sugarcane_blue_all
+# rename family ID to avoid gcta issues
+awk '{if ($1 == 0) print $1 = 1,$2,$3,$4 > "sugarcane_yield.map"; else print $1,$2,$3,$4 > "sugarcane_yield.map"}'  sugarcane_yield.map
+awk '{if ($1 == 0) print $1 = 1,$2,$3,$4 > "sugarcane_yield.ped"; else print $1,$2,$3,$4 > "sugarcane_yield.ped"}'  sugarcane_yield.ped
 
-~/gcta_v1.94/gcta --bfile sugarcane_blue_all --make-grm --autosome --chr 1 --out sugarcane_blue_all.a
+plink --file sugarcane_yield --make-bed --allow-no-sex --out sugarcane_yield
 
-~/gcta_v1.94/gcta --bfile sugarcane_blue_all --make-grm-d --autosome --chr 1 --out sugarcane_blue_all
+##Create GRM matrices
+~/gcta_v1.94/gcta --bfile sugarcane_yield --make-grm --autosome --chr 1 --out sugarcane_yield.a
 
-~/gcta_v1.94/gcta --bfile sugarcane_blue_all --make-grm-gz --autosome --chr 1 --out sugarcane_blue_all.a
+~/gcta_v1.94/gcta --bfile sugarcane_yield --make-grm-d --autosome --chr 1 --out sugarcane_yield
 
-~/gcta_v1.94/gcta --bfile sugarcane_blue_all --make-grm-d-gz --autosome --chr 1 --out sugarcane_blue_all
+~/gcta_v1.94/gcta --bfile sugarcane_yield --make-grm-gz --autosome --chr 1 --out sugarcane_yield.a
 
-zcat sugarcane_blue_all.a.grm.gz | gawk '{print $1,$2,$3,$4*$4}' | gzip > sugarcane_blue_all.aa.grm.gz
+~/gcta_v1.94/gcta --bfile sugarcane_yield --make-grm-d-gz --autosome --chr 1 --out sugarcane_yield.d
 
-~/gcta_v1.94/gcta --grm-gz sugarcane_blue_all.aa.grm.gz --make-grm --out sugarcane_blue_all.aa
+zcat sugarcane_yield.a.grm.gz | gawk '{print $1,$2,$3,$4*$4}' | gzip > sugarcane_yield.aa.grm.gz
 
-~/mtg2 -p ../../sugarcane_blue_all.fam -d Blue_phenos_TCH.dat -bg ../../sugarcane_blue_all.a.grm.bin -mod 1 -out 16_tch_a.txt -bvr 16_tch_a.bv
+~/gcta_v1.94/gcta --grm-gz sugarcane_yield.aa.grm.gz --make-grm --out sugarcane_yield.aa
 
-~/mtg2 -p ../../sugarcane_blue_all.fam -d Blue_phenos_TCH.dat -mbg mgrm.txt -mod 1 -out 16_tch_ad.txt -bvr 16_tch_ad.bv
+##Perform GBLUP by mtg2 
+~/mtg2 -p ../../sugarcane_yield.fam -d Blue_phenos_TCH.dat -bg ../../sugarcane_blue_all.a.grm.bin -mod 1 -out 16_tch_a.txt -bvr 16_tch_a.bv
 
-~/mtg2 -p ../../sugarcane_blue_all.fam -d Blue_phenos_TCH.dat -mbg ade_grm.txt -mod 1 -out 16_tch_ade.txt -bvr 16_tch_ade.bv
+~/mtg2 -p ../../sugarcane_yield.fam -d Blue_phenos_TCH.dat -mbg mgrm.txt -mod 1 -out 16_tch_ad.txt -bvr 16_tch_ad.bv
 
-~/mtg2 -p ../../sugarcane_blue_all.fam -d Blue_phenos_CCS.dat -bg sugarcane_blue_all.a.grm.bin -mod 1 -out 16_ccs_a.txt -bvr 16_ccs_a.bv
+~/mtg2 -p ../../sugarcane_yield.fam -d Blue_phenos_TCH.dat -mbg ade_grm.txt -mod 1 -out 16_tch_ade.txt -bvr 16_tch_ade.bv
 
-~/mtg2 -p ../../sugarcane_blue_all.fam -d Blue_phenos_CCS.dat -mbg mgrm.txt -mod 1 -out 16_ccs_ad.txt -bvr 16_ccs_ad.bv
+~/mtg2 -p ../../sugarcane_yield.fam -d Blue_phenos_CCS.dat -bg sugarcane_blue_all.a.grm.bin -mod 1 -out 16_ccs_a.txt -bvr 16_ccs_a.bv
 
-~/mtg2 -p ../../sugarcane_blue_all.fam -d Blue_phenos_CCS.dat -mbg ade_grm.txt -mod 1 -out 16_ccs_ade.txt -bvr 16_ccs_ade.bv
+~/mtg2 -p ../../sugarcane_yield.fam -d Blue_phenos_CCS.dat -mbg mgrm.txt -mod 1 -out 16_ccs_ad.txt -bvr 16_ccs_ad.bv
 
-~/mtg2 -p ../../sugarcane_blue_all.fam -d Blue_phenos_Fibre.dat -bg sugarcane_blue_all.a.grm.bin -mod 1 -out 16_fibre_a.txt -bvr 16_fibre_a.bv
+~/mtg2 -p ../../sugarcane_yield.fam -d Blue_phenos_CCS.dat -mbg ade_grm.txt -mod 1 -out 16_ccs_ade.txt -bvr 16_ccs_ade.bv
 
-~/mtg2 -p ../../sugarcane_blue_all.fam -d Blue_phenos_Fibre.dat -mbg mgrm.txt -mod 1 -out 16_fibre_ad.txt -bvr 16_fibre_ad.bv
+~/mtg2 -p ../../sugarcane_yield.fam -d Blue_phenos_Fibre.dat -bg sugarcane_blue_all.a.grm.bin -mod 1 -out 16_fibre_a.txt -bvr 16_fibre_a.bv
 
-~/mtg2 -p ../../sugarcane_blue_all.fam -d Blue_phenos_Fibre.dat -mbg ade_grm.txt -mod 1 -out 16_fibre_ade.txt -bvr 16_fibre_ade.bv
+~/mtg2 -p ../../sugarcane_yield.fam -d Blue_phenos_Fibre.dat -mbg mgrm.txt -mod 1 -out 16_fibre_ad.txt -bvr 16_fibre_ad.bv
+
+~/mtg2 -p ../../sugarcane_yield.fam -d Blue_phenos_Fibre.dat -mbg ade_grm.txt -mod 1 -out 16_fibre_ade.txt -bvr 16_fibre_ade.bv
