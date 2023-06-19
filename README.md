@@ -22,8 +22,8 @@ python $TMPDIR/ML_composer/GS_composer.py --ped $geno --pheno $pheno --mpheno 1 
 
 ##Please use GS_composer as main py file for Deep learning related prediction
 ```
-usage: GS_composer.py [-h] --ped PED -pheno PHENO [-mpheno MPHENO] [-index INDEX] --model MODEL [--load LOAD] [--trait TRAIT] [-o OUTPUT] [-r ROUND] [-lr LR] [-epo EPOCH] [-batch BATCH] [--rank RANK] [-plot] [-residual]
-                      [-quiet QUIET] [-save SAVE] [-config CONFIG] [--width WIDTH] [--depth DEPTH] [--use-mean]
+usage: GS_composer.py [-h] --ped PED -pheno PHENO [-mpheno MPHENO] [-index INDEX] [-vindex VINDEX] --model MODEL [--load LOAD] [--trait TRAIT] [-o OUTPUT] [-r ROUND] [-lr LR] [-epo EPOCH] [-batch BATCH] [--rank RANK]
+                      [-plot] [-residual] [-quiet QUIET] [-save SAVE] [-config CONFIG] [--width WIDTH] [--depth DEPTH] [--use-mean]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -37,6 +37,8 @@ Required:
                         Phenotype columns (start with 1).
   -index INDEX, --index INDEX
                         index file
+  -vindex VINDEX, --vindex VINDEX
+                        index for validate
   --model MODEL         Select training model.
   --load LOAD           load model from file.
   --trait TRAIT         give trait a name.
