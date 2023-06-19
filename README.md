@@ -72,14 +72,14 @@ Required:
                         config file path, default: ./ML_composer.ini (DO NOT USE)
   --width WIDTH         Hidden layer width (units).
   --depth DEPTH         Hidden layer depth.
-
+```
 
 #Using backend GS_RF_composer as Random Forest related GP. Same parameters were inherited from the above scripts.
 
 Example:
 python $TMPDIR/ML_composer/GS_composer.py --ped $geno --pheno $pheno --mpheno 1 --index $index --trait smut --leave $leave --tree $tree --model "RF" -o ./Random_forest --quiet 1
 
-
+```
 usage: GS_RF_composer.py [-h] --ped PED -pheno PHENO [-mpheno MPHENO]
                          [-index INDEX] --model MODEL [--load LOAD]
                          [--trait TRAIT] [-o OUTPUT] [-r ROUND] [-lr LR]
