@@ -77,11 +77,11 @@ Required:
 #Using backend GS_RF_composer as Random Forest related GP. Same parameters were inherited from the above scripts.
 
 Example:
-python $TMPDIR/ML_composer/GS_composer.py --ped $geno --pheno $pheno --mpheno 1 --index $index --trait smut --leave $leave --tree $tree --model "Random Forest" -o ./Random_forest --quiet 1 --leave 50 100 --tree 100 200
+python $TMPDIR/ML_composer/GS_composer.py --ped $geno --pheno $pheno --mpheno 1 --index $index --vindex 1 --trait smut --leave $leave --tree $tree --model "Random Forest" -o ./Random_forest --quiet 1 --leave 50 100 --tree 100 200
 
 ```
-usage: GS_RF_composer.py [-h] --ped PED -pheno PHENO [-mpheno MPHENO] [-index INDEX] --model MODEL [--load LOAD] [--trait TRAIT] [-o OUTPUT] [-r ROUND] [--rank RANK] [-plot PLOT] [-sli SILENCE] [-save SAVE]
-                         [-config CONFIG] [--leave LEAVE [LEAVE ...]] [--tree TREE [TREE ...]]
+usage: GS_RF_composer.py [-h] --ped PED -pheno PHENO [-mpheno MPHENO] [-index INDEX] [-vindex VINDEX] --model MODEL [--load LOAD] [--trait TRAIT] [-o OUTPUT] [-r ROUND] [--rank RANK] [-plot PLOT] [-sli SILENCE]
+                         [-save SAVE] [-config CONFIG] [--leave LEAVE [LEAVE ...]] [--tree TREE [TREE ...]]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -94,6 +94,8 @@ Required:
                         Phenotype columns (start with 1).
   -index INDEX, --index INDEX
                         index file
+  -vindex VINDEX, --vindex VINDEX
+                        index for validate
   --model MODEL         Select training model.
   --load LOAD           load model from file.
   --trait TRAIT         give trait a name.
