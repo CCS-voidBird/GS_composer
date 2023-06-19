@@ -3,11 +3,6 @@ from Functions import *
 from ClassModel import *
 import pandas as pd
 import matplotlib.pyplot as plt
-try:
-    import tensorflow as tf
-    from tensorflow.keras.utils import to_categorical
-except:
-    print("This a CPU-only platform.")
 import pickle
 import numpy as np
 from sklearn.model_selection import train_test_split
@@ -18,23 +13,13 @@ import platform
 from datetime import datetime
 from sklearn.metrics import mean_squared_error
 import configparser
+import joblib
 import gc
 import os
 ##############################################################
-##########Training requirement################################
-##Training by para-sets -- convolutional act function + full connected act function + optimizer + learningRate###
-##Output format: an table with mean accuracy for each para set; A density plot for each accuracy##########
-#################################################################
-#Test command (Local): python GS_base.py --config ./test_config
-CNNs = ["CNN","TDCNN","DeepGS"]
-PATIENCE = 100
-"""
-GENO_PATH = "E:\learning resource\PhD\geno_data1.csv"
-PHENO_PATH = "E:\learning resource\PhD\phenotypes.csv"
 
-TRAIN_PATH = "E:/learning resource/PhD/sugarcane/2015_TCHBlup_2000.csv"
-VALID_PATH = "E:/learning resource/PhD/sugarcane/2016_TCHBlup_2000.csv"
-"""
+PATIENCE = 100
+
 def get_args():
     parser = argparse.ArgumentParser()
     req_grp = parser.add_argument_group(title='Required')
@@ -47,8 +32,6 @@ def get_args():
     req_grp.add_argument('--trait', type=str, help="give trait a name.", default=None)
     req_grp.add_argument('-o', '--output', type=str, help="Input output dir.")
     req_grp.add_argument('-r', '--round', type=int, help="training round.", default=10)
-    req_grp.add_argument('-lr', '--lr', type=int, help="Learning rate.", default=0.0001)
-    req_grp.add_argument('-epo', '--epoch', type=int, help="training epoch.", default=50)
     req_grp.add_argument('--rank', type=bool, help="If the trait is a ranked value, will use a standard value instead.", default=False)
     req_grp.add_argument('-plot', '--plot', type=bool, help="show plot?",
                          default=False)
@@ -60,8 +43,6 @@ def get_args():
                          default="./ML_composer.ini")
 
     ### Neural model default attributes##
-    req_grp.add_argument('--width', type=int, help="Hidden layer width (units).", default=8)
-    req_grp.add_argument('--depth', type=int, help="Hidden layer depth.", default=4)
     req_grp.add_argument('--leave', type=int,nargs='+', help="tree leaf options.", default=[50,100,500,1000,2000,5000])
     req_grp.add_argument('--tree', type=int,nargs='+', help="tree population options.", default=[50,100,200,500])
     args = parser.parse_args()
@@ -129,15 +110,6 @@ class ML_composer:
         if self.args.model == "Random Forest":
             self.record = self.record.reindex(columns=self.record.columns.tolist() + ["Leaves", "Trees"])
         print(self.record.shape)
-        """
-        #self.train_data = self._raw_data["GENO"].query('X.1 in @train_sample').query('X.1 not in @remove_list').iloc[:,6:]
-        #self.valid_data = self._raw_data["GENO"].query('X.1 in @valid_sample').iloc[:,6:]
-        #print(self.train_data.shape)
-        #print(self.valid_data.shape)
-
-        #self.train_data = filtered_data.query('Series in @train_year').query('Sample not in @remove_list').drop(["Series","Sample"], axis=1)
-        #self.valid_data = filtered_data.query('Series in @valid_year').drop(["Series","Sample"], axis=1)
-        """
         return
 
     def prepare_model(self):
@@ -194,16 +166,9 @@ class ML_composer:
         n_features = self.train_data.shape[1:]
 
         if self.model_name == "RF":
-            self._model["TRAINED_MODEL"] = self._model["INIT_MODEL"].modelling(
-                input_shape=n_features, args=self.rf_hp, lr=float(self.args.lr))
+            self._model["TRAINED_MODEL"] = self._model["INIT_MODEL"].modelling(args=self.rf_hp)
         else:
-            self._model["TRAINED_MODEL"] = self._model["INIT_MODEL"].modelling(
-                input_shape=n_features, args=self.args, lr=float(self.args.lr))
-        if round == 1 and self.model_name != "RF":
-            with open(os.path.abspath(self.args.output) + "/model_summary.txt", "w") as fh:
-                self._model["TRAINED_MODEL"].summary(print_fn=lambda x: fh.write(x + "\n"))
-
-        callback = tf.keras.callbacks.EarlyStopping(monitor='loss', patience=PATIENCE)
+            print("Error, check train function")
 
         try:
             print(self._model["TRAINED_MODEL"].summary())
@@ -212,20 +177,7 @@ class ML_composer:
 
         startTime = datetime.now()
         self._model["TRAINED_MODEL"].fit(features_train, target_train)
-        '''
-        history = self._model["TRAINED_MODEL"].fit(
-            features_train, target_train,
-            epochs=int(self.args.epoch),
-            validation_data=(features_test, target_test), verbose=int(self.silence_mode),
-            callbacks=[callback],batch_size = self.batchSize)
-        
 
-        # let's just print the final loss
-        print(' - train loss     : ' + str(history.history['loss'][-1]))
-        print(' - validation loss: ' + str(history.history['val_loss'][-1]))
-        print(' - loss decrease rate in last 5 epochs: ' + str(
-            np.mean(np.gradient(history.history['val_loss'][-5:]))))
-        '''
         test_length = features_test.shape[0]
         y_pred = self._model["TRAINED_MODEL"].predict(features_test)  # Testing with the valid set - outside the training
         #obversed = np.squeeze(target_test)
@@ -254,7 +206,7 @@ class ML_composer:
         print("RF parameters: {} leave options, {} tree options".format(len(self.args.leave),len(self.args.tree)))
         #build a list of elements pair from args leaves and trees
         hp_sets = list(combi([self.args.leave,self.args.tree]))
-
+        
         for hp in hp_sets:
             self.rf_hp["leaves"],self.rf_hp["trees"] = hp
             print(hp)
@@ -263,29 +215,27 @@ class ML_composer:
                 history, test_accuracy, runtime = self.train(features_train, features_test, target_train, target_test,
                                                              round=round)
                 valid_accuracy, mse = self.model_validation()
-                new_record = [self.args.trait, train_index, valid_index, self.model_name,
+                new_record = [self.args.trait, train_index, valid_index[0], self.model_name,
                                                      test_accuracy, valid_accuracy, mse, runtime.seconds / 60,self.rf_hp["leaves"],self.rf_hp["trees"]]
                 print(new_record)
                 self.record.loc[len(self.record)] = new_record
                 check_usage()
-                if self.plot is True and self.model_name != "RF":
-                    # create a folder to save the plot, folder name: trait, model
-                    print("Plotting the training process...")
-                    plot_dir = os.path.abspath(self.args.output) + "/{}_{}_{}".format(self.args.trait, self.model_name,
-                                                                                      self.args.trait)
-                    print(plot_dir)
-                    if not os.path.exists(plot_dir):
-                        os.makedirs(plot_dir)
-                    # create a file name for the plot: path, model name, trait and round
-                    plot_name = plot_dir + "/{}_{}_{}.png".format(self.args.trait, self.model_name, val)
-                    # plot_name = os.path.abspath(self.args.output) + "/" + self.args.model + "_" + self.args.trait + "_" + str(round) + ".png"
-                    plot_loss_history(history, self.args.trait, plot_name, round - self.args.round)
+                if self.record[self.record.ValidSet.isin(valid_index)].Valid_Accuracy.max() == valid_accuracy:
+                    print("This is the best model for this validation set.")
+                    if self.args.save is True:
+                        print("saving model>.")
+                        saved_rf_model_fn = os.path.abspath(self.args.output)+"/{}_{}_{}.json".format(self.args.trait, self.model_name,val)
+                        pickle.dump(self._model["TRAINED_MODEL"], open(saved_rf_model_fn, "wb"))
+                        print("Model saved.")
                 self._model["TRAINED_MODEL"] = None
                 # keras.backend.clear_session()
                 # gc.collect()
                 round += 1
+        
+                
         if self.save == True:
             self.export_record()
+            
         return
 
     def model_validation(self):
@@ -343,15 +293,10 @@ class Model:
         return
 
 
-def get_model_summary(model: tf.keras.Model) -> str:
-    string_list = []
-    model.summary(line_length=80, print_fn=lambda x: string_list.append(x))
-    return "\n".join(string_list)
-
 def main():
     args = get_args()
     config_path = os.path.abspath(args.config)
-    print("Get config file path from: ", config_path)
+    print("Get config file path from: (Current Not working) ", config_path)
     config = configparser.ConfigParser()
     if platform.system().lower() == "windows":
         print(config_path)
@@ -380,11 +325,16 @@ def main():
 
     index_ref = composer.prepare_cross_validate()
     i = 1
+    importances = []
     for train_idx,valid_idx in index_ref:
         print("Cross-validate: {}".format(i))
         composer.prepare_training(train_idx,valid_idx)
         composer.compose(train_idx,valid_idx,valid_idx[0])
+        good_model = joblib.load(os.path.abspath(args.output)+"/{}_{}_{}.json".format(args.trait, composer.model_name,valid_idx[0]))
+        importances.append([args.trait,valid_idx[0]]+list(good_model.feature_importances_))
         i+=1
+    importances = pd.DataFrame(importances,columns=["Trait","Val"]+list(range(1,good_model.feature_importances_.shape[0]+1))) 
+    importances.to_csv(os.path.abspath(args.output)+"/{}_{}_importance.txt".format(args.trait, composer.model_name),sep="\t",index=False)
 
 if __name__ == "__main__":
     main()
