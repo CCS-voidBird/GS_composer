@@ -42,6 +42,7 @@ def get_args():
     req_grp.add_argument('-pheno', '--pheno', type=str, help="Phenotype file.", required=True)
     req_grp.add_argument('-mpheno', '--mpheno', type=int, help="Phenotype columns (start with 1).", default=1)
     req_grp.add_argument('-index', '--index', type=str, help="index file", default = None)
+    req_grp.add_argument('-vindex', '--vindex', type=int, help="index for validate", default = None)
     req_grp.add_argument('--model', type=str, help="Select training model.", required=True)
     req_grp.add_argument('--load', type=str, help="load model from file.", default=None)
     req_grp.add_argument('--trait', type=str, help="give trait a name.", default=None)
@@ -166,6 +167,10 @@ class ML_composer:
             train_index = [x for x in self._info["CROSS_VALIDATE"] if x is not idx]
             valid_index = [idx]
             index_ref.append((train_index,valid_index))
+            if self.args.vindex is not None and idx == self.args.vindex:
+                print("Detected manual validation index")
+                print(f"Binary validation; index {idx} will be validate set, and anyother indexes will be training set")
+                return [(train_index,valid_index)]
 
         return index_ref
 
