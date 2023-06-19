@@ -1,6 +1,6 @@
 library(dplyr)
 #setwd("E:/learning resource/PhD/genomic data/Sugarcane/")
-genos = read.csv("./qc_genotypes_decode.csv",sep="\t")
+genos = read.csv("./qc_genotypes_decode.csv",sep="\t") ##same with transposed genos_SelTools.txt
 phenos = read.csv("./blups13_17.txt",sep="\t")
 train_year = c("2013","2014","2015")
 valid_year = c("2017")
@@ -50,6 +50,7 @@ write.table(finalBLUP,file="./Blue_phenotypes.txt",quote = F,row.names = F,sep="
 
 reference = read.csv("./phenotypes.csv",sep="\t")
 phenos = read.table("./Blue_phenotypes.txt",sep="\t",h=T)
+ped = read.table("./sugarcane_yield.ped",sep="\t",h=F)
 
 train_clones <- unique(reference[which(reference$Series %in% c("2013","2014","2015","2017")),]$Clone)
 #train_clones <- unique(reference[which(reference$Series %in% c("2013","2014","2015","2016","2017")),]$Clone)
@@ -71,3 +72,6 @@ valid_clones = unique(reference[which(reference$Series == 2017),]$Clone)
 train_blues = cbind(train_blues$Clone,train_blues)
 train_blues[which(train_blues$Clone %in% valid_clones),][,3:5] = NA
 write.table(train_blues,"./Blue_phenotypes_train_16.txt",sep="\t",row.names = F,col.names = F,quote = F)
+ped_2015 = ped[which(ped[,2] %in% train_clones$Clone),]
+write.table(ped_2015,"./sugarcane_yield_2015.ped",sep="\t",row.names = F,col.names = F,quote = F)
+write.table(ped_2015[1:6],"./sugarcane_yield_2015.fam",sep="\t",row.names = F,col.names = F,quote = F)
