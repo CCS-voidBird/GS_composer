@@ -77,16 +77,11 @@ Required:
 #Using backend GS_RF_composer as Random Forest related GP. Same parameters were inherited from the above scripts.
 
 Example:
-python $TMPDIR/ML_composer/GS_composer.py --ped $geno --pheno $pheno --mpheno 1 --index $index --trait smut --leave $leave --tree $tree --model "RF" -o ./Random_forest --quiet 1
+python $TMPDIR/ML_composer/GS_composer.py --ped $geno --pheno $pheno --mpheno 1 --index $index --trait smut --leave $leave --tree $tree --model "Random Forest" -o ./Random_forest --quiet 1 --leave 50 100 --tree 100 200
 
 ```
-usage: GS_RF_composer.py [-h] --ped PED -pheno PHENO [-mpheno MPHENO]
-                         [-index INDEX] --model MODEL [--load LOAD]
-                         [--trait TRAIT] [-o OUTPUT] [-r ROUND] [-lr LR]
-                         [-epo EPOCH] [--rank RANK] [-plot PLOT]
-                         [-sli SILENCE] [-save SAVE] [-config CONFIG]
-                         [--width WIDTH] [--depth DEPTH]
-                         [--leave LEAVE [LEAVE ...]] [--tree TREE [TREE ...]]
+usage: GS_RF_composer.py [-h] --ped PED -pheno PHENO [-mpheno MPHENO] [-index INDEX] --model MODEL [--load LOAD] [--trait TRAIT] [-o OUTPUT] [-r ROUND] [--rank RANK] [-plot PLOT] [-sli SILENCE] [-save SAVE]
+                         [-config CONFIG] [--leave LEAVE [LEAVE ...]] [--tree TREE [TREE ...]]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -100,30 +95,24 @@ Required:
   -index INDEX, --index INDEX
                         index file
   --model MODEL         Select training model.
-  --load LOAD           load model from file. (DO NOT USE)
+  --load LOAD           load model from file.
   --trait TRAIT         give trait a name.
   -o OUTPUT, --output OUTPUT
                         Input output dir.
   -r ROUND, --round ROUND
-                        training round. 
-  -lr LR, --lr LR       Learning rate. (DO NOT USE)
-  -epo EPOCH, --epoch EPOCH
-                        training epoch. (DO NOT USE)
-  --rank RANK           If the trait is a ranked value, will use a standard
-                        value instead. (DO NOT USE)
+                        training round.
+  --rank RANK           If the trait is a ranked value, will use a standard value instead.
   -plot PLOT, --plot PLOT
-                        show plot? (DO NOT USE)
+                        show plot?
   -sli SILENCE, --silence SILENCE
                         silent mode
   -save SAVE, --save SAVE
                         save model True/False
   -config CONFIG, --config CONFIG
                         config file path, default: ./ML_composer.ini
-  --width WIDTH         Hidden layer width (units).
-  --depth DEPTH         Hidden layer depth.
   --leave LEAVE [LEAVE ...]
                         tree leaf options.
   --tree TREE [TREE ...]
-                        tree (estimator) numbers options.
+                        tree population options.
 
 ```
