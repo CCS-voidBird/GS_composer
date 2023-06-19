@@ -1,6 +1,9 @@
 # GS_composer
 GS_composer for Genomic prediction
 
+This repositorie was a backup version for some publish reproduce needs; For other use, please email author (uqcche32@uq.edu.au) to get latest information.
+
+
 Required: 
           A plink like ped file for genotypes - (numeric alleles for each SNP)
           A plink like phenotype file for phenotypes. format: FID,IID,Trait1... seperated by tabs       
@@ -18,7 +21,7 @@ MODELS = {
     "Attention CNN": AttentionCNN, (Need work) (DO NOT USE)
     "ResMLP": ResMLP, (DO NOT USE)
     "LNN": LNN, (Local connected Network)
-}
+} # All the models are stored in ClassModel.py
 ```
 Example:
 python $TMPDIR/ML_composer/GS_composer.py --ped $geno --pheno $pheno --mpheno 1 --index $index --trait smut --width $width --depth $depth --model "Attention CNN" -o ./Attention_CNN_elu --quiet 1 --plot --residual
