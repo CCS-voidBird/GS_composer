@@ -1,7 +1,7 @@
 library(dplyr)
-setwd("E:/learning resource/PhD/genomic data/Sugarcane/")
+#setwd("E:/learning resource/PhD/genomic data/Sugarcane/")
 genos = read.csv("./qc_genotypes_decode.csv",sep="\t")
-phenos = read.csv("./phenotypes.csv",sep="\t")
+phenos = read.csv("./blups13_17.txt",sep="\t")
 train_year = c("2013","2014","2015")
 valid_year = c("2017")
 train_set = phenos[phenos$Series %in% train_year,]
@@ -19,7 +19,7 @@ library(asreml)
 TCH = whole_set$TCHBlup
 CCS = whole_set$CCSBlup
 Fibre = whole_set$FibreBlup
-setwd("E:/learning resource/OneDrive - The University of Queensland/Sugarcane")
+#setwd("E:/learning resource/OneDrive - The University of Queensland/Sugarcane")
 
 
 model = asreml(fixed=TCHBlup ~ Series + Region + Trial + Crop +Clone,
@@ -50,11 +50,10 @@ write.table(finalBLUP,file="./Blue_phenotypes.txt",quote = F,row.names = F,sep="
 
 reference = read.csv("./phenotypes.csv",sep="\t")
 phenos = read.table("./Blue_phenotypes.txt",sep="\t",h=T)
+
 train_clones <- unique(reference[which(reference$Series %in% c("2013","2014","2015","2017")),]$Clone)
-train_clones <- unique(reference[which(reference$Series %in% c("2013","2014","2015","2016","2017")),]$Clone)
-
+#train_clones <- unique(reference[which(reference$Series %in% c("2013","2014","2015","2016","2017")),]$Clone)
 train_blues = phenos[which(phenos$Clone %in% train_clones),]
-
 train_clones = data.frame(train_clones)
 colnames(train_clones)[1] = "Clone"
 train_blues = left_join(train_clones,train_blues,by="Clone") #cbind(train_blues$Clone,train_blues)
@@ -63,8 +62,12 @@ train_blues = cbind(train_blues$Clone,train_blues)
 train_blues[which(train_blues$Clone %in% valid_clones),][,3:5] = NA
 write.table(train_blues,"./Blue_phenotypes_train_15.txt",sep="\t",row.names = F,col.names = F,quote = F)
 
-allBlue_remove_valid = phenos
-valid_clones = unique(references[which(references$Series == 2017),]$Clone)
-allBlue_remove_valid[which(allBlue_remove_valid$Clone %in% valid_clones),][,2:4] = NA
-allBlue_remove_valid = cbind(allBlue_remove_valid$Clone,allBlue_remove_valid)
-write.table(allBlue_remove_valid,"./Blue_phenotypes_all_remove_valid.txt",sep="\t",row.names = F,col.names = F,quote = F)
+train_clones <- unique(reference[which(reference$Series %in% c("2013","2014","2015","2016","2017")),]$Clone)
+train_blues = phenos[which(phenos$Clone %in% train_clones),]
+train_clones = data.frame(train_clones)
+colnames(train_clones)[1] = "Clone"
+train_blues = left_join(train_clones,train_blues,by="Clone") #cbind(train_blues$Clone,train_blues)
+valid_clones = unique(reference[which(reference$Series == 2017),]$Clone)
+train_blues = cbind(train_blues$Clone,train_blues)
+train_blues[which(train_blues$Clone %in% valid_clones),][,3:5] = NA
+write.table(train_blues,"./Blue_phenotypes_train_16.txt",sep="\t",row.names = F,col.names = F,quote = F)
