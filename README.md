@@ -18,9 +18,9 @@ MODELS = {
 } # All the models are stored in ClassModel.py
 ```
 Example:
-python $TMPDIR/ML_composer/GS_composer.py --ped $geno --pheno $pheno --mpheno 1 --index $index --trait smut --width $width --depth $depth --model "Attention CNN" -o ./Attention_CNN_elu --quiet 1 --plot --residual
+python $TMPDIR/ML_composer/GS_composer.py --ped $geno --pheno $pheno --mpheno 1 --index $index --trait smut --width $width --depth $depth --model "Numeric CNN" -o ./NCNN --quiet 1
 
-##Please use GS_composer as main py file for Deep learning related prediction
+##Please use GS_composer as main py file for Deep learning related prediction, put rest of .py files under the same directory.
 ```
 usage: GS_composer.py [-h] --ped PED -pheno PHENO [-mpheno MPHENO] [-index INDEX] [-vindex VINDEX] --model MODEL [--load LOAD] [--trait TRAIT] [-o OUTPUT] [-r ROUND] [-lr LR] [-epo EPOCH] [-batch BATCH] [--rank RANK]
                       [-plot] [-residual] [-quiet QUIET] [-save SAVE] [-config CONFIG] [--width WIDTH] [--depth DEPTH] [--use-mean]
