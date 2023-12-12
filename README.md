@@ -22,14 +22,24 @@ python $TMPDIR/ML_composer/GS_composer.py --ped $geno --pheno $pheno --mpheno 1 
 
 ##Please use GS_composer as main py file for Deep learning related prediction, put rest of .py files under the same directory.
 ```
-usage: GS_composer.py [-h] --ped PED -pheno PHENO [-mpheno MPHENO] [-index INDEX] [-vindex VINDEX] --model MODEL [--load LOAD] [--trait TRAIT] [-o OUTPUT] [-r ROUND] [-lr LR] [-epo EPOCH] [-batch BATCH] [--rank RANK]
-                      [-plot] [-residual] [-quiet QUIET] [-save SAVE] [-config CONFIG] [--width WIDTH] [--depth DEPTH] [--use-mean]
+usage: GS_composer.py [-h] [--ped PED] [-pheno PHENO] [-mpheno MPHENO]
+                      [-index INDEX] [-vindex VINDEX] [-annotation ANNOTATION]
+                      [-o OUTPUT] [--trait TRAIT] [-build] [-analysis]
+                      [--width WIDTH] [--depth DEPTH] [--use-mean]
+                      [--model MODEL] [--load LOAD] [--data-type DATA_TYPE]
+                      [-r ROUND] [-lr LR] [-epo EPOCH] [--num-heads NUM_HEADS]
+                      [--activation ACTIVATION] [--embedding EMBEDDING]
+                      [--locallyConnect LOCALLYCONNECT]
+                      [--locallyBlock LOCALLYBLOCK]
+                      [--AttentionBlock ATTENTIONBLOCK] [-batch BATCH]
+                      [-loss LOSS] [--rank RANK] [-plot] [-epistatic]
+                      [-addNorm] [-residual] [-quiet QUIET] [-save SAVE]
+                      [-config CONFIG]
 
 optional arguments:
   -h, --help            show this help message and exit
-  --use-mean
 
-Required:
+General:
   --ped PED             PED-like file name
   -pheno PHENO, --pheno PHENO
                         Phenotype file.
@@ -39,20 +49,58 @@ Required:
                         index file
   -vindex VINDEX, --vindex VINDEX
                         index for validate
-  --model MODEL         Select training model.
-  --load LOAD           load model from file.
-  --trait TRAIT         give trait a name.
+  -annotation ANNOTATION, --annotation ANNOTATION
+                        annotation file,1st row as colname
   -o OUTPUT, --output OUTPUT
                         Input output dir.
+  --trait TRAIT         give trait a name.
+
+Task Options:
+  -build, --build       Full model process.
+  -analysis, --analysis
+
+Model Options:
+  --width WIDTH         FC layer width (units).
+  --depth DEPTH         FC layer depth.
+  --use-mean
+  --model MODEL         Select training model from MLP, Numeric CNN, Binary
+                        CNN, Test CNN, Duo CNN, Double CNN, Attention CNN,
+                        MultiHead Attention LNN, ResMLP, LNN, MultiLevel
+                        Attention, MultiLevelNN.
+  --load LOAD           load model from file.
+  --data-type DATA_TYPE
+                        Trait type (numerous, ordinal, binary)
   -r ROUND, --round ROUND
                         training round.
   -lr LR, --lr LR       Learning rate.
   -epo EPOCH, --epoch EPOCH
                         training epoch.
+  --num-heads NUM_HEADS
+                        (Only for multi-head attention) Number of heads,
+                        currently only recommand 1 head.
+  --activation ACTIVATION
+                        Activation function for hidden Dense layer.
+  --embedding EMBEDDING
+                        (Only for multi-head attention) Embedding length
+                        (default as 8)
+  --locallyConnect LOCALLYCONNECT
+                        (Only work with locally connected layers)
+                        locallyConnect Channels (default as 1)
+  --locallyBlock LOCALLYBLOCK
+                        (Only work with locally connected layers) Length of
+                        locallyBlock segment (default as 10)
+  --AttentionBlock ATTENTIONBLOCK
+                        (Only work with Attention layers) AttentionBlock
+                        numbers (default as 1)
   -batch BATCH, --batch BATCH
                         batch size.
-  --rank RANK           If the trait is a ranked value, will use a standard value instead.
+  -loss LOSS, --loss LOSS
+                        loss founction.
+  --rank RANK           If the trait is a ranked value, will use a standard
+                        value instead.
   -plot, --plot
+  -epistatic, --epistatic
+  -addNorm, --addNorm
   -residual, --residual
   -quiet QUIET, --quiet QUIET
                         silent mode, 0: quiet, 1: normal, 2: verbose
@@ -60,8 +108,7 @@ Required:
                         save model True/False
   -config CONFIG, --config CONFIG
                         config file path, default: ./ML_composer.ini
-  --width WIDTH         Hidden layer width (units).
-  --depth DEPTH         Hidden layer depth.
+
 ```
 
 #Using backend GS_RF_composer as Random Forest related GP. Same parameters were inherited from the above scripts.
