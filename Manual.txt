@@ -1,16 +1,7 @@
-usage: GS_composer.py [-h] [--ped PED] [-pheno PHENO] [-mpheno MPHENO]
-                      [-index INDEX] [-vindex VINDEX] [-annotation ANNOTATION]
-                      [-o OUTPUT] [--trait TRAIT] [-build] [-analysis]
-                      [--width WIDTH] [--depth DEPTH] [--use-mean]
-                      [--model MODEL] [--load LOAD] [--data-type DATA_TYPE]
-                      [-r ROUND] [-lr LR] [-epo EPOCH] [--num-heads NUM_HEADS]
-                      [--activation ACTIVATION] [--embedding EMBEDDING]
-                      [--locallyConnect LOCALLYCONNECT]
-                      [--locallyBlock LOCALLYBLOCK]
-                      [--AttentionBlock ATTENTIONBLOCK] [-batch BATCH]
-                      [-loss LOSS] [--rank RANK] [-plot] [-epistatic]
-                      [-addNorm] [-residual] [-quiet QUIET] [-save SAVE]
-                      [-config CONFIG]
+usage: GS_composer.py [-h] [--ped PED] [-pheno PHENO] [-mpheno MPHENO] [-index INDEX] [-vindex VINDEX] [-annotation ANNOTATION] [-o OUTPUT] [--trait TRAIT] [-build] [-analysis] [--model MODEL] [--width WIDTH] [--depth DEPTH]
+                      [--load LOAD] [--data-type DATA_TYPE] [-r ROUND] [-lr LR] [-epo EPOCH] [--num-heads NUM_HEADS] [--activation ACTIVATION] [--embedding EMBEDDING] [--locallyConnect LOCALLYCONNECT]
+                      [--locallyBlock LOCALLYBLOCK] [--AttentionBlock ATTENTIONBLOCK] [-batch BATCH] [--loss LOSS] [--rank RANK] [-quiet QUIET] [-plot] [-epistatic] [-addNorm] [-maf] [-residual] [-save] [-config CONFIG]       
+                      [--use-mean]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -34,15 +25,12 @@ General:
 Task Options:
   -build, --build       Full model process.
   -analysis, --analysis
+                        Analysis only process.
 
 Model Options:
+  --model MODEL         Select training model from MLP, Numeric CNN, Binary CNN, Test CNN, Duo CNN, Double CNN, Attention CNN, MultiHead Attention LNN, ResMLP, LNN, MultiLevel Attention, MultiLevelNN.
   --width WIDTH         FC layer width (units).
   --depth DEPTH         FC layer depth.
-  --use-mean
-  --model MODEL         Select training model from MLP, Numeric CNN, Binary
-                        CNN, Test CNN, Duo CNN, Double CNN, Attention CNN,
-                        MultiHead Attention LNN, ResMLP, LNN, MultiLevel
-                        Attention, MultiLevelNN.
   --load LOAD           load model from file.
   --data-type DATA_TYPE
                         Trait type (numerous, ordinal, binary)
@@ -52,35 +40,29 @@ Model Options:
   -epo EPOCH, --epoch EPOCH
                         training epoch.
   --num-heads NUM_HEADS
-                        (Only for multi-head attention) Number of heads,
-                        currently only recommand 1 head.
+                        (Only for multi-head attention) Number of heads, currently only recommand 1 head.
   --activation ACTIVATION
                         Activation function for hidden Dense layer.
   --embedding EMBEDDING
-                        (Only for multi-head attention) Embedding length
-                        (default as 8)
+                        (Only for multi-head attention) Embedding length (default as 8)
   --locallyConnect LOCALLYCONNECT
-                        (Only work with locally connected layers)
-                        locallyConnect Channels (default as 1)
+                        (Only work with locally connected layers) locallyConnect Channels (default as 1)
   --locallyBlock LOCALLYBLOCK
-                        (Only work with locally connected layers) Length of
-                        locallyBlock segment (default as 10)
+                        (Only work with locally connected layers) Length of locallyBlock segment (default as 10)
   --AttentionBlock ATTENTIONBLOCK
-                        (Only work with Attention layers) AttentionBlock
-                        numbers (default as 1)
+                        (Only work with Attention layers) AttentionBlock numbers (default as 1)
   -batch BATCH, --batch BATCH
                         batch size.
-  -loss LOSS, --loss LOSS
-                        loss founction.
-  --rank RANK           If the trait is a ranked value, will use a standard
-                        value instead.
+  --loss LOSS           loss founction from mse, mae, cor_mse, r2.
+  --rank RANK           If the trait is a ranked value, will use a standard value instead.
+  -quiet QUIET, --quiet QUIET
+                        silent mode, 0: quiet, 1: normal, 2: verbose
   -plot, --plot
   -epistatic, --epistatic
   -addNorm, --addNorm
+  -maf, --maf           Enable minor allele frequency multiplier, it will adjust genotype alleles with its MAF.
   -residual, --residual
-  -quiet QUIET, --quiet QUIET
-                        silent mode, 0: quiet, 1: normal, 2: verbose
-  -save SAVE, --save SAVE
-                        save model True/False
+  -save, --save         save model True/False
   -config CONFIG, --config CONFIG
-                        config file path, default: ./ML_composer.ini
+                        config file path, default: ./ML_composer.ini (Currently not available))
+  --use-mean
