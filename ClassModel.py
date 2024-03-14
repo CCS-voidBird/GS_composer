@@ -23,6 +23,7 @@ loss_fn = {
     "mse": "mse",
     "mae": "mae",
     "cor_mse": Cor_mse_loss().loss,
+    "r2": R2_score_loss().loss,
 }
 
 act_fn = {
@@ -44,6 +45,12 @@ lr_logger = LearningRateLogger()
 def p_corr(y_true, y_pred):
     pearson_correlation = tfp.stats.correlation(y_true, y_pred)
     return pearson_correlation
+
+def r2_score(observations,predictions):
+    total_error = tf.reduce_sum(tf.square(tf.subtract(observations, tf.reduce_mean(observations))))
+    unexplained_error = tf.reduce_sum(tf.square(tf.subtract(observations, predictions)))
+    R_squared = tf.subtract(1.0, tf.divide(unexplained_error, total_error))
+    return R_squared
 
 class Residual(Layer):
     def __init__(self, channels_in,kernel,**kwargs):
@@ -83,6 +90,7 @@ class NN:
         self.optimizers = {"rmsprop": keras.optimizers.RMSprop,
                       "Adam": keras.optimizers.Adam,
                       "SGD": keras.optimizers.SGD}
+        self.lossfunc = loss_fn[self.args.loss] #For external validation
 
     def model_name(self):
         #get class name
@@ -540,7 +548,7 @@ class NCNN(NN):
             model.compile(optimizer=self.optimizers[optimizer], loss=loss_class.loss, metrics=['acc'])
         else:
 
-            model.compile(optimizer=self.optimizers[optimizer](learning_rate=self.lr_schedule), loss=loss_fn[self.args.loss], metrics=[p_corr])
+            model.compile(optimizer=self.optimizers[optimizer](learning_rate=self.lr_schedule), loss=loss_fn[self.args.loss], metrics=[p_corr,r2_score])
 
         """
         Optimizers: Adam, RMSProp, SGD 
@@ -679,7 +687,7 @@ class MLP(NN):
             model.compile(optimizer=self.optimizers[optimizer], loss=loss_class.loss, metrics=['acc'])
         else:
 
-            model.compile(optimizer=self.optimizers[optimizer](learning_rate=self.lr_schedule), loss=loss_fn[self.args.loss], metrics=[p_corr])
+            model.compile(optimizer=self.optimizers[optimizer](learning_rate=self.lr_schedule), loss=loss_fn[self.args.loss], metrics=[p_,r2_score])
 
         """       
         model = Sequential()
@@ -1166,10 +1174,14 @@ class MultiLevelAttention(NN):
         # train and get guide attention for actual phenotypes
         for attention_block in range(args.AttentionBlock):
             V1 = MultiLevel_BlockAttention(args.num_heads, return_attention=False,epi_genomic=self.args.epistatic)(V)
-            #V1 = layers.Add()([V1, V]) ## Epistatic + Additive
-            #V1 = layers.BatchNormalization()(V1)
+            if self.args.addNorm is True:
+                V1 = layers.Add()([V1, V])
+                V1 = layers.BatchNormalization()(V1)
             #V = layers.Dropout(0.1)(V)
             V = layers.Dense(embed,activation=act_fn[self.args.activation])(V1)
+            if self.args.addNorm is True:
+                V = layers.Add()([V, V1])
+                V = layers.BatchNormalization()(V)
             #V1 = layers.Add()([V, V1]) ## Epistatic + Additive
             #V = layers.BatchNormalization()(V1)
             #V = layers.Dropout(0.1)(V)
@@ -1197,7 +1209,7 @@ class MultiLevelAttention(NN):
             model.compile(optimizer=self.optimizers[optimizer], loss=loss_class.loss, metrics=[p_corr])
         else:
 
-            model.compile(optimizer=self.optimizers[optimizer](learning_rate=self.lr_schedule), loss=loss_fn[self.args.loss], metrics=[p_corr])
+            model.compile(optimizer=self.optimizers[optimizer](learning_rate=self.lr_schedule), loss=loss_fn[self.args.loss], metrics=[p_corr,r2_score])
             #model.compile(optimizer=optimizers[optimizer], loss=self.args.loss, metrics=['acc'])
 
         # QK = layers.Dot(axes=[2, 2])([Q_encoding, K_encoding])

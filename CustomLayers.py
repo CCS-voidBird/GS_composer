@@ -100,6 +100,17 @@ class Cor_mse_loss:
         loss = tf.add(loss, mse)
         return loss
     
+class R2_score_loss:
+    def __init__(self):
+        self.loss = self._calculate_loss
+
+    def _calculate_loss(self,predictions, observations):
+        # Calculate R2 scores as loss
+        total_error = tf.reduce_sum(tf.square(tf.subtract(observations, tf.reduce_mean(observations))))
+        unexplained_error = tf.reduce_sum(tf.square(tf.subtract(observations, predictions)))
+        R_squared = tf.subtract(1.0, tf.divide(unexplained_error, total_error))
+        loss = R_squared if R_squared > 0.0 else tf.reduce_mean(tf.square(predictions - observations), axis=1)
+        return loss
 
 class OrdinalOutputLayer(layers.Layer):
     def __init__(self, num_classes, **kwargs):
