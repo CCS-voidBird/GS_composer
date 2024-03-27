@@ -105,11 +105,12 @@ class R2_score_loss:
         self.loss = self._calculate_loss
 
     def _calculate_loss(self,predictions, observations):
-        # Calculate R2 scores as loss
+        # Calculate R2 scores as loss if minus then use MSE
         total_error = tf.reduce_sum(tf.square(tf.subtract(observations, tf.reduce_mean(observations))))
         unexplained_error = tf.reduce_sum(tf.square(tf.subtract(observations, predictions)))
         R_squared = tf.subtract(1.0, tf.divide(unexplained_error, total_error))
-        loss = R_squared if R_squared > 0.0 else tf.reduce_mean(tf.square(predictions - observations), axis=1)
+        mse_loss = tf.reduce_mean(tf.square(predictions - observations), axis=1)
+        loss = R_squared if R_squared > 0.0 else mse_loss
         return loss
 
 class OrdinalOutputLayer(layers.Layer):
@@ -689,8 +690,7 @@ class MultiLevel_BlockAttention(layers.Layer):
 
     def build(self, input_shape):
         #assert len(input_shape[0]) >= 2
-        print(input_shape)
-        print("from buiild")
+        print("input shape: ",input_shape)
         super(MultiLevel_BlockAttention, self).build(input_shape)
         self.return_attention = self.return_attention
         self.seq_embedding = input_shape[-1]

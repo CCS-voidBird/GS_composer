@@ -413,14 +413,20 @@ class ML_composer:
             y_pred = np.reshape(y_pred_valid, (val_length,))
             accuracy_valid = np.corrcoef(y_pred, valid_pheno)[0, 1]
 
-        special_loss = loss_fn[self.args.loss](y_pred,valid_pheno).numpy()
+        mse = mean_squared_error(y_pred_valid, valid_pheno)
         print("Testing prediction:")
         print("Predicted: ", y_pred_valid[:10])
         print("observed: ", valid_pheno[:10])
         print("Observation mean: {} Var: {}".format(np.mean(valid_pheno), np.var(valid_pheno)))
         print("Prediction mean: {} Var: {}".format(np.mean(y_pred_valid),np.var(y_pred_valid)))
-        print("The estimated loss defined by model loss function as {} is: ".format(self.args.loss),special_loss)
-        mse = mean_squared_error(y_pred_valid, valid_pheno)
+
+        try:
+            special_loss = loss_fn[self.args.loss](y_pred,valid_pheno).numpy()
+            print("The estimated loss defined by model loss function as {} is: ".format(self.args.loss),special_loss)
+        except:
+            print("The model didn't used the special loss function (e.g. R2) or faced some issues..")
+            special_loss = mse
+        
 
         print("Validate prediction accuracy (measured as Pearson's correlation) is: ",
               accuracy_valid)
