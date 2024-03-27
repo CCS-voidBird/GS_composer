@@ -24,9 +24,9 @@ loss="r2"
 LB=10
 LC=16
 AB=1
-python ./GS_composer.py --build --analysis\
+python ./GS_composer.py --build --analysis \
 	--ped $geno --pheno $pheno --mpheno 1 --index $index --trait $trait \
-	--model "MultiLevel Attention" --width 256 --depth 2 --addNorm\
+	--model "MultiLevel Attention" --width 256 --depth 2 --addNorm \
 	--locallyConnect $LC --embedding $LC --AttentionBlock $AB --batch 18 --num-heads 1 --locallyBlock $LB --epistatic \
 	--epoch 30 --round 1 --lr 0.001 --loss $loss \
 	-o $target --quiet 1 --plot \
