@@ -9,12 +9,13 @@ Required:
           A plink like phenotype file for phenotypes. format: FID,IID,Trait1... seperated by tabs       
           A Index file for cross-valiation. Format: FID, IID, Index
 
-Current available models: (Use Key as call parameter)
+Current available/stable models: (Use Key as call parameter)
 ```
 MODELS = {
     "MLP": MLP,
     "Numeric CNN": NCNN,
     "Binary CNN": BCNN,
+    "MultiLevel Attention": MultiLevelAttention, #An in-house modified transformer model
 } # All the models are stored in ClassModel.py
 ```
 Example:
