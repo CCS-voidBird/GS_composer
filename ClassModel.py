@@ -687,7 +687,7 @@ class MLP(NN):
             model.compile(optimizer=self.optimizers[optimizer], loss=loss_class.loss, metrics=['acc'])
         else:
 
-            model.compile(optimizer=self.optimizers[optimizer](learning_rate=self.lr_schedule), loss=loss_fn[self.args.loss], metrics=[p_,r2_score])
+            model.compile(optimizer=self.optimizers[optimizer](learning_rate=self.lr_schedule), loss=loss_fn[self.args.loss], metrics=[p_corr,r2_score])
 
         """       
         model = Sequential()
